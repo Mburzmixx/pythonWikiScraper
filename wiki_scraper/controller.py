@@ -27,7 +27,7 @@ class Controller:
 
     def _handle_summary(self):
         self._ensure_article()
-        print(self.article)
+        print(self.article.get_first_paragraph())
 
     def _handle_table(self):
         self._ensure_article()
@@ -55,6 +55,9 @@ class Controller:
         auto_count_words(start_phrase=start_phrase, depth=depth, wait=wait)
 
     def _ensure_article(self):
+        # Maybe without if, so as artilcle will be refreshed each time?
+        # Then schecking if article.phrase == self.phrase
+        # What if there should be two phrases in self.phrase?
         if self.article is None and self.phrase is not None:
             scraper = Scraper(
                 base_url=BULBAPEDIA_URL,
