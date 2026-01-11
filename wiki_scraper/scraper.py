@@ -10,7 +10,7 @@ class Scraper:
     requests_timeout = 10
     wait_seconds = 2
     headers = {
-        """User-Agent": "wiki_scraper_bot/1.0 
+        "User-Agent": """wiki_scraper_bot/1.0 
         (contact: mburza@student.uw.edu.pl)"""
     }
 
@@ -48,6 +48,9 @@ class Scraper:
 
 
     def scrape_from_web(self) -> Article:
+        if self.phrase is None:
+            raise ArticleNotFound("Phrase is None.")
+
         self.base_url = self.base_url.rstrip("/")
         url = f"{self.base_url}/{self.phrase.replace(' ', '_')}"
 
