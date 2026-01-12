@@ -1,3 +1,5 @@
+# tests/test_scraper_local.py
+# unit tests for local file scraping in Scraper class.
 import unittest
 from pathlib import Path
 
