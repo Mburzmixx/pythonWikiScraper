@@ -10,8 +10,10 @@ class Scraper:
     requests_timeout = 10
     wait_seconds = 2
     headers = {
-        "User-Agent": """wiki_scraper_bot/1.0 
-        (contact: mburza@student.uw.edu.pl)"""
+        "User-Agent": (
+            "wiki_scraper_bot/1.0 "
+            "(contact: mburza@student.uw.edu.pl)"
+        )
     }
 
     def __init__(self, base_url: str, phrase: str, use_local_file=False):
