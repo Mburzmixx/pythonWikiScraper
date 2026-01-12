@@ -15,7 +15,11 @@ class TestScraperLocal(unittest.TestCase):
         self.sample_path = repo_root / "tests" / "sample_data" / "team_rocket.html"
 
     def test_scrape_from_file_success(self):
-        scraper = Scraper(base_url=str(self.sample_path), phrase="Team Rocket", use_local_file=True)
+        scraper = Scraper(
+            base_url=str(self.sample_path),
+            phrase="Team Rocket",
+            use_local_file=True
+        )
         article = scraper.scrape()
 
         self.assertIsInstance(article, Article)
@@ -24,7 +28,11 @@ class TestScraperLocal(unittest.TestCase):
 
     def test_scrape_from_file_not_found(self):
         missing_file = self.sample_path.parent / "missing.html"
-        scraper = Scraper(base_url=str(missing_file), phrase="Anything", use_local_file=True)
+        scraper = Scraper(
+            base_url=str(missing_file),
+            phrase="Anything",
+            use_local_file=True
+        )
 
         with self.assertRaises(ArticleNotFound):
             scraper.scrape()
