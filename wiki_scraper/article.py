@@ -23,7 +23,14 @@ class Article:
         return ""
 
     def get_table_by_index(self, index: int) -> DataFrame:
-        raise NotImplementedError()
+        tables = self._parsed_content.find_all("table")
+
+        if index < 1 or index > len(tables):
+            return DataFrame()
+
+        nth_table = tables[index - 1]
+        df = pd.read_html(str(nth_table))[0]
+        return df
 
     def count_words(self) -> dict[str, int]:
         raise NotImplementedError()
