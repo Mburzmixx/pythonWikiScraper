@@ -9,16 +9,16 @@ dict_path = Path("word-counts.json")
 
 
 def update_word_counts(to_add: dict[str, int]):
-    pass
+    raise NotImplementedError()
 
 
 def analyze_relative_word_freq(mode: str, n: int, chart_path=None):
-    pass
+    raise NotImplementedError()
 
 
 def get_relative_freq_table() -> pd.DataFrame:
-    pass
+    raise NotImplementedError()
 
 
 def auto_count_words(start_phrase: str, depth: int, wait: float):
-    pass
+    raise NotImplementedError()
