@@ -27,7 +27,7 @@ class TestScraperLocal(unittest.TestCase):
         article = scraper.scrape()
 
         self.assertIsInstance(article, Article)
-        self.assertEqual(article.phrase, "Team Rocket")
+        self.assertEqual("Team Rocket", article.phrase)
         self.assertIn("Team Rocket", article.html_content)
 
     def test_scrape_from_file_not_found(self):
@@ -68,7 +68,7 @@ class TestScraperMockGet(unittest.TestCase):
         article = scraper.scrape()
 
         self.assertIsInstance(article, Article)
-        self.assertEqual(article.phrase, "Generation")
+        self.assertEqual("Generation", article.phrase)
         self.assertIn("Test paragraph -- Generations.", article.html_content)
 
         mock_get.assert_called_once_with(
@@ -96,7 +96,7 @@ class TestScraperMockGet(unittest.TestCase):
         with self.assertRaises(ArticleNotFound):
             scraper.scrape()
 
-        self.assertEqual(mock_get.call_count, Scraper.num_attempts)
+        self.assertEqual(Scraper.num_attempts, mock_get.call_count)
 
     @patch("wiki_scraper.scraper.time.sleep")
     @patch("wiki_scraper.scraper.requests.get")
@@ -127,9 +127,9 @@ class TestScraperMockGet(unittest.TestCase):
         article = scraper.scrape()
 
         self.assertIsInstance(article, Article)
-        self.assertEqual(mock_get.call_count, 3)
-        self.assertEqual(mock_sleep.call_count, 2)
-        self.assertEqual(article.phrase, "Generation")
+        self.assertEqual(3, mock_get.call_count)
+        self.assertEqual(2, mock_sleep.call_count)
+        self.assertEqual("Generation", article.phrase)
         mock_get.assert_called_with(
             "https://bulbapedia.bulbagarden.net/wiki/Generation",
             headers=Scraper.headers,
