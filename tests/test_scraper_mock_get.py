@@ -92,7 +92,6 @@ class TestScraperMockGet(unittest.TestCase):
             phrase="Generation",
             use_local_file=False
         )
-
         article = scraper.scrape()
 
         self.assertIsInstance(article, Article)
