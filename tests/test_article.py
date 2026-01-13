@@ -1,7 +1,8 @@
 # tests/test_article_reading_words.py
 # Unit tests for class `Article`:
 # 1. focused on checking how it reads words,
-# 2.
+# 2. focused on reading tables,
+# 3. focused on counting words.
 import unittest
 from pathlib import Path
 from wiki_scraper.article import Article
