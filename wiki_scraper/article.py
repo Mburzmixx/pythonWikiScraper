@@ -1,8 +1,10 @@
 # Module containing implementation of class `Article`.
 # This class represents an article
 # and is responsible for parsing scrapped content.
+from collections import Counter
 from bs4 import BeautifulSoup
-from pandas import DataFrame
+from pandas import DataFrame, read_html
+from re import findall
 
 
 class Article:
@@ -11,26 +13,52 @@ class Article:
         self.phrase = phrase
         self._parsed_content = BeautifulSoup(self.html_content, "html.parser")
 
-    def get_first_paragraph(self) -> str:
-        container = self._parsed_content.find(
+        temp_container = self._parsed_content.find(
             "div", class_="mw-content-ltr mw-parser-output"
         )
 
-        if container is not None:
-            paragraph = container.find("p")
+        if temp_container is None:
+            self.container = None
+            return
+
+        # Cleans unwanted tags from the container
+        # (stored as nodes in the BeautifulSoup tree)
+        for tag in temp_container.find_all(["style", "script"]):
+            tag.decompose()
+
+        self.container = temp_container
+
+    def get_first_paragraph(self) -> str:
+        if self.container is not None:
+            paragraph = self.container.find("p")
             if paragraph is not None:
-                return paragraph.get_text(strip=True)
+                return paragraph.get_text(separator=" ", strip=True)
         return ""
 
     def get_table_by_index(self, index: int) -> DataFrame:
-        tables = self._parsed_content.find_all("table")
+        if self.container is None:
+            return DataFrame()
+
+        tables = self.container.find_all("table")
 
         if index < 1 or index > len(tables):
             return DataFrame()
 
         nth_table = tables[index - 1]
-        df = pd.read_html(str(nth_table))[0]
+        # function from `pandas`
+        df = read_html(str(nth_table))[0]
         return df
 
     def count_words(self) -> dict[str, int]:
-        raise NotImplementedError()
+        if self.container is None:
+            return {}
+
+        text = self.container.get_text(separator=" ", strip=True)
+
+        # regex looking for words, ignoring punctuation and numbers
+        pattern = r'[A-Za-z]+'
+        words = findall(pattern, text.lower())
+
+        # creates needed dictionary
+        return dict(Counter(words))
+        
