@@ -68,7 +68,7 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
         )
 
         # Normalizing frequencies to match `word_frequency` scale
-        normaliser = 1.1 * df["frequency in the article"].max()
+        normaliser = df["frequency in the article"].sum()
         df["frequency in the article"] = (
             df["frequency in the article"] / normaliser
         )
@@ -96,7 +96,7 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
         )
 
         # Normalizing frequencies to match `word_frequency` scale
-        normaliser = 1.1 * df["frequency in the article"].max()
+        normaliser = df["frequency in the article"].sum()
         df["frequency in the article"] = (
             df["frequency in the article"] / normaliser
         )
