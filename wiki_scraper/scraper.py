@@ -5,6 +5,7 @@ import time
 from wiki_scraper.article import Article
 from wiki_scraper.exceptions import ArticleNotFound
 
+
 class Scraper:
     num_attempts = 5
     requests_timeout = 10
@@ -38,16 +39,15 @@ class Scraper:
         except FileNotFoundError:
             raise ArticleNotFound(
                 f"Local file '{self.base_url}' not found."
-                )
+            )
         except UnicodeDecodeError:
             raise ArticleNotFound(
                 f"Cannot decode file '{self.base_url}' with 'utf-8' encoding."
-                )
+            )
         except PermissionError:
             raise ArticleNotFound(
                 f"Permission denied to read file '{self.base_url}'."
-                )
-
+            )
 
     def scrape_from_web(self) -> Article:
         if self.phrase is None:
@@ -82,14 +82,13 @@ class Scraper:
         if response is None:
             raise ArticleNotFound(
                 f"Failed to fetch '{url}' after {self.num_attempts} attempts."
-                )
+            )
 
         # Map other error codes to ArticleNotFound explicitly
         if response.status_code >= 400:
             raise ArticleNotFound(
                 f"HTTP {response.status_code} when fetching '{url}'."
-                )
+            )
 
         html_content = response.text
         return Article(html_content=html_content, phrase=self.phrase)
-            
