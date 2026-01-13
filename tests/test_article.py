@@ -97,14 +97,14 @@ class TestArticleReadingTables(unittest.TestCase):
         article = scraper.scrape()
         df = article.get_table_by_index(1)
 
-        self.assertEqual(df.shape, (3, 3))
+        self.assertEqual((3, 3), df.shape)
         self.assertIn("Type", df.columns)
         self.assertIn("Color", df.columns)
         self.assertIn("Example", df.columns)
 
-        self.assertEqual(df.iloc[0, 0], "Fire")
-        self.assertEqual(df.iloc[1, 0], "Water")
-        self.assertEqual(df.iloc[2, 0], "Grass")
+        self.assertEqual("Fire", df.iloc[0, 0])
+        self.assertEqual("Water", df.iloc[1, 0])
+        self.assertEqual("Grass", df.iloc[2, 0])
 
     def test_table_index_not_one(self):
         scraper = Scraper(
@@ -115,7 +115,7 @@ class TestArticleReadingTables(unittest.TestCase):
         article = scraper.scrape()
         df = article.get_table_by_index(2)
 
-        self.assertEqual(df.shape, (2, 3))
+        self.assertEqual((2, 3), df.shape)
         self.assertIn("Generation", df.columns)
 
     def test_bigger_table(self):
@@ -127,10 +127,10 @@ class TestArticleReadingTables(unittest.TestCase):
         article = scraper.scrape()
         df = article.get_table_by_index(1)
 
-        self.assertEqual(df.shape, (3, 4))
+        self.assertEqual((3, 4), df.shape)
         self.assertIn("Super Effective Against", df.columns)
 
-        self.assertEqual(df.iloc[0, 0], "Fire")
+        self.assertEqual("Fire", df.iloc[0, 0])
         self.assertIn("Grass", df.iloc[0, 1])
 
     def test_no_tables(self):
@@ -153,15 +153,114 @@ class TestArticleReadingTables(unittest.TestCase):
         article = scraper.scrape()
         df = article.get_table_by_index(1)
 
-        self.assertEqual(df.shape, (6, 2))
+        self.assertEqual((6, 2), df.shape)
         self.assertIn("Type effectiveness", df.columns)
         self.assertIn("Multiplier", df.columns)
 
-        self.assertEqual(df.iloc[0, 0], "Doubly super effective")
-        self.assertEqual(df.iloc[0, 1], "×2.56")
+        self.assertEqual("Doubly super effective", df.iloc[0, 0])
+        self.assertEqual("×2.56", df.iloc[0, 1])
 
         self.assertIn("Triply resisted", df.iloc[5, 0])
-        self.assertEqual(df.iloc[5, 1], "×0.244140625")
+        self.assertEqual("×0.244140625", df.iloc[5, 1])
+
+
+class TestArticleCountingWords(unittest.TestCase):
+    def setUp(self):
+        repo_root = Path(__file__).resolve().parent.parent
+        self.simple_table_path = [repo_root / "tests" / "sample_data" /
+                                  f"table_simple_{i}.html" for i in range(4)]
+        self.mid_table_path = [repo_root / "tests" / "sample_data" /
+                               f"table_mid_{i}.html" for i in range(1)]
+
+    def test_count_words_simple_table(self):
+        scraper = Scraper(
+            base_url=str(self.simple_table_path[0]),
+            phrase="TableTest0",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        word_counts = article.count_words()
+
+        self.assertIn("fire", word_counts)
+        self.assertIn("water", word_counts)
+        self.assertIn("grass", word_counts)
+        self.assertEqual(1, word_counts["fire"])
+        self.assertEqual(1, word_counts["water"])
+        self.assertEqual(1, word_counts["grass"])
+        self.assertEqual(1, word_counts["type"])
+
+    def test_count_words_two_tables(self):
+        scraper = Scraper(
+            base_url=str(self.simple_table_path[1]),
+            phrase="TableTest1",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        word_counts = article.count_words()
+
+        self.assertIn("gen", word_counts)
+        self.assertIn("generation", word_counts)
+        self.assertIn("year", word_counts)
+        self.assertEqual(4, word_counts["gen"])
+        self.assertEqual(1, word_counts["generation"])
+        self.assertEqual(1, word_counts["year"])
+        self.assertEqual(1, word_counts["overview"])
+
+    def test_count_words_complex_table(self):
+        scraper = Scraper(
+            base_url=str(self.simple_table_path[2]),
+            phrase="TableTest2",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        word_counts = article.count_words()
+
+        self.assertIn("type", word_counts)
+        self.assertIn("fire", word_counts)
+        self.assertIn("water", word_counts)
+        self.assertIn("effectiveness", word_counts)
+        self.assertEqual(4, word_counts["fire"])
+        self.assertEqual(5, word_counts["water"])
+        self.assertEqual(5, word_counts["grass"])
+        self.assertEqual(3, word_counts["type"])
+        self.assertGreater(len(word_counts), 10)
+
+    def test_count_words_no_tables(self):
+        scraper = Scraper(
+            base_url=str(self.simple_table_path[3]),
+            phrase="TableTest3",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        word_counts = article.count_words()
+
+        self.assertIn("text", word_counts)
+        self.assertIn("article", word_counts)
+        self.assertIn("tables", word_counts)
+        self.assertEqual(1, word_counts["text"])
+        self.assertEqual(1, word_counts["article"])
+        self.assertEqual(2, word_counts["tables"])
+        self.assertEqual(1, word_counts["just"])
+        self.assertGreater(len(word_counts), 5)
+
+    def test_count_words_mid_table(self):
+        scraper = Scraper(
+            base_url=str(self.mid_table_path[0]),
+            phrase="BulbaTest",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        word_counts = article.count_words()
+
+        self.assertIn("type", word_counts)
+        self.assertIn("effectiveness", word_counts)
+        self.assertIn("doubly", word_counts)
+        self.assertIn("super", word_counts)
+        self.assertIn("effective", word_counts)
+        self.assertEqual(2, word_counts["effective"])
+        self.assertEqual(2, word_counts["doubly"])
+        self.assertEqual(3, word_counts["resisted"])
+        self.assertEqual(3, word_counts["type"])
 
 
 if __name__ == "__main__":
