@@ -5,6 +5,7 @@ from collections import Counter
 from bs4 import BeautifulSoup
 from pandas import DataFrame, read_html
 from re import findall
+from io import StringIO
 
 
 class Article:
@@ -46,7 +47,7 @@ class Article:
 
         nth_table = tables[index - 1]
         # function from `pandas`
-        df = read_html(str(nth_table))[0]
+        df = read_html(StringIO(str(nth_table)))[0]
         return df
 
     def count_words(self) -> dict[str, int]:
