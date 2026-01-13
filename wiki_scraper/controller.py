@@ -55,8 +55,8 @@ class Controller:
         auto_count_words(start_phrase=start_phrase, depth=depth, wait=wait)
 
     def _ensure_article(self):
-        # Maybe without if, so as artilcle will be refreshed each time?
-        # Then schecking if article.phrase == self.phrase
+        # Maybe without if, so as article will be refreshed each time?
+        # Then checking if article.phrase == self.phrase
         # What if there should be two phrases in self.phrase?
         if self.article is None and self.phrase is not None:
             scraper = Scraper(
