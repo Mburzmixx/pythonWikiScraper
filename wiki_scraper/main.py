@@ -1,12 +1,12 @@
 # Main module.
-from wiki_scraper.cli import parse_args
+from wiki_scraper.cli import get_args
 from wiki_scraper.controller import Controller
 from wiki_scraper.exceptions import ArticleNotFound
 from wiki_scraper.utils import OK
 
 
 def main():
-    args = parse_args()
+    args = get_args()
     controller = Controller(args)
     try:
         if controller.run() == OK:
