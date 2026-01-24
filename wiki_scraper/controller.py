@@ -22,8 +22,7 @@ class Controller:
             "auto_count_words": self._handle_auto_count_words,
         }
 
-        for command in self.args.commands:
-            handlers[command]()
+        handlers[self.args.cmd]()
         return OK
 
     def _handle_summary(self):
