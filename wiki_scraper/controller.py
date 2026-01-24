@@ -1,5 +1,6 @@
 # Module containing implementation of class `Controller`,
 # which manages the flow of the program.
+from pandas import Series
 from wiki_scraper.scraper import Scraper
 from wiki_scraper.utils import (OK, BULBAPEDIA_URL,
                                 update_word_counts, analyze_relative_word_freq,
@@ -36,11 +37,14 @@ class Controller:
         df = self.article.get_table_by_index(index=index)
         path = self.phrase + ".csv"
         df.to_csv(path, index=False)
+        # TODO - check printing of value frequency
+        flattened_df = Series(df.values.ravel()).value_counts()
+        print(flattened_df)
 
     def _handle_count_words(self):
         self._ensure_article()
         to_add = self.article.count_words()
-        update_word_counts(to_add=to_add)
+        update_word_counts(to_add)
 
     def _handle_relative_word_freq(self):
         mode = self.args.mode
