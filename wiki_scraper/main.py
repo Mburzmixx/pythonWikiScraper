@@ -5,8 +5,8 @@ from wiki_scraper.exceptions import ArticleNotFound
 from wiki_scraper.utils import OK
 
 
-def main():
-    args = get_args()
+def main(argv=None):
+    args = get_args() if argv is None else get_args(argv)
     controller = Controller(args)
     try:
         if controller.run() == OK:

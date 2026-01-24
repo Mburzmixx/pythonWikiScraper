@@ -132,9 +132,9 @@ def normalize_legacy_flags(argv: list[str]) -> list[str]:
     return argv
 
 
-def get_args():
-    argv = normalize_legacy_flags(sys.argv[1:])
+def get_args(argv: list[str] | None = None) -> argparse.Namespace:
+    _argv = normalize_legacy_flags(sys.argv[1:] if argv is None else argv)
 
-    args = parse_args(argv)
+    args = parse_args(_argv)
     args.phrase = format_phrase(args.phrase)
     return args
