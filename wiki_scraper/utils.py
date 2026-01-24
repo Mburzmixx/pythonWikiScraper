@@ -90,6 +90,9 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
 
         # Normalizing frequencies to match `word_frequency` scale
         normaliser = df["frequency in the article"].sum()
+        if normaliser == 0:
+            normaliser = 1
+
         df["frequency in the article"] = (
                 df["frequency in the article"] / normaliser
         )
@@ -98,6 +101,7 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
 
 
 def auto_count_words(start_phrase: str, depth: int, wait: float):
+    start_phrase = format_phrase(start_phrase)
     begin_url = get_url_from_phrase(start_phrase)
 
     visited = set()
