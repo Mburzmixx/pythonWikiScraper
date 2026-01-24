@@ -5,9 +5,10 @@ from pandas import DataFrame
 import time
 import matplotlib.pyplot as plt
 from pathlib import Path
+from wiki_scraper.scraper import Scraper
 
 OK = 0
-BULBAPEDIA_URL = "abecadle"
+BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/"
 repo_root = Path(__file__).resolve().parent.parent
 dict_path = repo_root / "wiki_scraper" / "word-counts.json"
 
@@ -27,14 +28,6 @@ def update_word_counts(to_add: dict[str, int]):
 
 def analyze_relative_word_freq(mode: str, n: int, chart_path=None):
     data = get_relative_freq_table(mode=mode, n=n)
-
-    # data = DataFrame({
-    #     "word": ["hello", "world", "python"],
-    #     "frequency in the article": [0.05, 0.03, 0.01],
-    #     "frequency in the wiki language": [0.08, 0.02, 0.015]
-    # })
-
-    print(data)
 
     if chart_path is not None:
         dyn_width = max(10, int(n * 0.8))
@@ -70,7 +63,7 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
         # Normalizing frequencies to match `word_frequency` scale
         normaliser = df["frequency in the article"].sum()
         df["frequency in the article"] = (
-            df["frequency in the article"] / normaliser
+                df["frequency in the article"] / normaliser
         )
 
         df_sorted = df.sort_values(
@@ -98,11 +91,57 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
         # Normalizing frequencies to match `word_frequency` scale
         normaliser = df["frequency in the article"].sum()
         df["frequency in the article"] = (
-            df["frequency in the article"] / normaliser
+                df["frequency in the article"] / normaliser
         )
 
         return df
 
 
 def auto_count_words(start_phrase: str, depth: int, wait: float):
-    raise NotImplementedError()
+    begin_url = get_url_from_phrase(start_phrase)
+
+    visited = set()
+    to_visit = [(begin_url, 0)]
+
+    while len(to_visit) > 0:
+        current_url, current_depth = to_visit.pop(0)
+
+        if (current_url in visited) or (current_depth > depth) \
+                or (not current_url.startswith(BULBAPEDIA_URL)):
+            continue
+
+        visited.add(current_url)
+
+        scraper = Scraper(
+            base_url=BULBAPEDIA_URL,
+            phrase=get_phrase_from_url(current_url),
+            use_local_file=False
+        )
+
+        article = scraper.scrape()
+
+        word_counts = article.count_words()
+        update_word_counts(word_counts)
+
+        if article.container is not None:
+            for link in article.container.find_all("a", href=True):
+                href = link['href']
+                if href.startswith("/wiki/") and not ':' in href:
+                    # This prefix is already in `BULBAPEDIA_URL`
+                    full_url = get_url_from_phrase(href)
+                    to_visit.append((full_url, current_depth + 1))
+
+        time.sleep(wait)
+
+
+def get_url_from_phrase(phrase: str) -> str:
+    phrase = phrase.removeprefix("/wiki/")
+    return BULBAPEDIA_URL + phrase
+
+
+def get_phrase_from_url(url: str) -> str:
+    return url.removeprefix(BULBAPEDIA_URL).removeprefix("/wiki/")
+
+
+def format_phrase(phrase: str) -> str:
+    return phrase.replace(" ", "_")
