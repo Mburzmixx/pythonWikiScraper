@@ -17,9 +17,9 @@ class Controller:
         handlers = {
             "summary": self._handle_summary,
             "table": self._handle_table,
-            "count_words": self._handle_count_words,
-            "relative_word_freq": self._handle_relative_word_freq,
-            "auto_count_words": self._handle_auto_count_words,
+            "count-words": self._handle_count_words,
+            "analyze-relative-word-frequency": self._handle_relative_word_freq,
+            "auto-count-words": self._handle_auto_count_words,
         }
 
         handlers[self.args.cmd]()
@@ -62,9 +62,5 @@ class Controller:
         # Then checking if article.phrase == self.phrase
         # What if there should be two phrases in self.phrase?
         if self.article is None and self.phrase is not None:
-            scraper = Scraper(
-                base_url=BULBAPEDIA_URL,
-                phrase=self.phrase,
-                use_local_file=False
-            )
+            scraper = Scraper(phrase=self.phrase)
             self.article = scraper.scrape()
