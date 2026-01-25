@@ -4,6 +4,7 @@ import requests
 import time
 from wiki_scraper.article import Article
 from wiki_scraper.exceptions import ArticleNotFound
+from wiki_scraper.utils import BULBAPEDIA_URL
 
 
 class Scraper:
@@ -17,9 +18,10 @@ class Scraper:
         )
     }
 
-    def __init__(self, base_url: str, phrase: str, use_local_file=False):
+    def __init__(self, phrase: str, base_url=BULBAPEDIA_URL,
+                 use_local_file=False):
         # if `use_local_file=True`, then path to local file
-        # should be given in `base_url`. 
+        # should be given in `base_url`.
         # In such case, encoding is assumed to be `utf-8`.
         self.base_url = base_url
         self.phrase = phrase
