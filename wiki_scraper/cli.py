@@ -13,7 +13,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         # enables manual formating (instead of automatic)
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    
+
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     # SUMMARY
@@ -37,7 +37,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Index of the table to retrieve.",
         required=True
     )
-    
+
     # COUNT WORDS
     p_count_words = sub.add_parser(
         "count-words",
@@ -55,11 +55,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Analyze relative word frequency."
     )
     p_analyze_relative_word_frequency.add_argument(
-        "phrase",
-        type=alphanumeric_phrase,
-        help="Phrase to search for.",
-    )
-    p_analyze_relative_word_frequency.add_argument(
         "--mode",
         choices=["article", "language"],
         required=True,
@@ -72,7 +67,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Number of top words to analyze."
     )
     p_analyze_relative_word_frequency.add_argument(
-        "--chart-path",
+        "--chart",
         type=str,
         required=False,
         help="Path to save the generated chart."
@@ -105,7 +100,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 
 
 def alphanumeric_phrase(phrase: str) -> str:
-    clean = phrase.replace(" ", "").replace("_", "").replace("-", "")
+    chars_to_remove = [' ', '_', '-', '(', ')', 'é', '"', "'", '\'']
+
+    clean = phrase
+    for ch in chars_to_remove:
+        clean = clean.replace(ch, "")
 
     if not clean.isalnum():
         raise argparse.ArgumentTypeError(
@@ -127,14 +126,19 @@ def normalize_legacy_flags(argv: list[str]) -> list[str]:
         "--auto-count-words": "auto-count-words"
     }
 
-    if argv and argv[0] in mapping:
+    if argv and (argv[0] in mapping):
         return [mapping[argv[0]]] + argv[1:]
     return argv
 
 
 def get_args(argv: list[str] | None = None) -> argparse.Namespace:
-    _argv = normalize_legacy_flags(sys.argv[1:] if argv is None else argv)
+    raw_argv = sys.argv[1:] if argv is None else argv[1:]
+    _argv = normalize_legacy_flags(raw_argv)
 
     args = parse_args(_argv)
+
+    if not hasattr(args, "phrase"):
+        args.phrase = None
+
     args.phrase = format_phrase(args.phrase)
     return args
