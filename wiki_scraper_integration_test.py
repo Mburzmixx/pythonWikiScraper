@@ -96,7 +96,7 @@ def online_test():
     # --- AUTO COUNT WORDS ---
     test_args = [
         "wiki_scraper",
-        "--auto-count-words", "VIZ Media",
+        "--auto-count-words", "Tropical_Wind",
         "--depth", "1",
         "--wait", "1"
     ]
