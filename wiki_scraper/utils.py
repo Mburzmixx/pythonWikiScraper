@@ -135,7 +135,7 @@ def auto_count_words(start_phrase: str, depth: int, wait: float):
         if article.container is not None:
             for link in article.container.find_all("a", href=True):
                 href = link['href']
-                if href.startswith("/wiki/") and not ':' in href:
+                if href.startswith("/wiki/") and ':' not in href:
                     # This prefix is already in `BULBAPEDIA_URL`
                     full_url = get_url_from_phrase(href)
                     to_visit.append((full_url, current_depth + 1))

@@ -30,6 +30,8 @@ def main():
         path=path_low_conf_score
     )
 
+    print("Successfully wrote word count dictionaries to files!")
+
 
 if __name__ == "__main__":
     main()

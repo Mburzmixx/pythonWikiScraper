@@ -148,7 +148,7 @@ def get_args(argv: list[str] | None = None) -> argparse.Namespace:
     args = parse_args(_argv)
 
     if not hasattr(args, "phrase"):
-        args.phrase = None
+        args.phrase = ""
 
     args.phrase = format_phrase(args.phrase)
     return args

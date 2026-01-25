@@ -2,9 +2,8 @@
 # which manages the flow of the program.
 from pandas import Series
 from wiki_scraper.scraper import Scraper
-from wiki_scraper.utils import (OK, BULBAPEDIA_URL,
-                                update_word_counts, analyze_relative_word_freq,
-                                auto_count_words)
+from wiki_scraper.utils import (OK, update_word_counts,
+                                analyze_relative_word_freq, auto_count_words)
 
 
 class Controller:
@@ -36,7 +35,6 @@ class Controller:
         df = self.article.get_table_by_index(index=index)
         path = self.phrase + ".csv"
         df.to_csv(path, index=False)
-        # TODO - check printing of value frequency
         flattened_df = Series(df.values.ravel()).value_counts()
         print(flattened_df)
 
