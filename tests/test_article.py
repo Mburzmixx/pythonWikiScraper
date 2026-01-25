@@ -5,8 +5,8 @@
 # 3. focused on counting words.
 import unittest
 from pathlib import Path
+from pandas import Series
 from wiki_scraper.article import Article
-
 from wiki_scraper.scraper import Scraper
 
 
@@ -262,6 +262,60 @@ class TestArticleCountingWords(unittest.TestCase):
         self.assertEqual(2, word_counts["doubly"])
         self.assertEqual(3, word_counts["resisted"])
         self.assertEqual(3, word_counts["type"])
+
+
+class TestPrintingValueFrequency(unittest.TestCase):
+    def setUp(self):
+        repo_root = Path(__file__).resolve().parent.parent
+        self.simple_table_path = [repo_root / "tests" / "sample_data" /
+                                  f"table_simple_{i}.html" for i in range(4)]
+        self.mid_table_path = [repo_root / "tests" / "sample_data" /
+                               f"table_mid_{i}.html" for i in range(1)]
+
+    def test_count_words_in_a_complex_table(self):
+        scraper = Scraper(
+            base_url=str(self.simple_table_path[2]),
+            phrase="SimpleTableTest",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        df = article.get_table_by_index(index=1)
+
+        flattened_df = Series(df.values.ravel()).value_counts()
+
+        self.assertEqual(flattened_df.loc["Water, Ground, Rock"], 2)
+        self.assertEqual(flattened_df.loc["Fire"], 1)
+        self.assertEqual(flattened_df.loc["Water"], 1)
+        self.assertEqual(flattened_df.loc["Grass"], 1)
+        self.assertEqual(flattened_df.sum(), 12)
+
+    def test_value_counts_mid_table(self):
+        scraper = Scraper(
+            base_url=str(self.mid_table_path[0]),
+            phrase="MidTableTest",
+            use_local_file=True
+        )
+        article = scraper.scrape()
+        df = article.get_table_by_index(index=1)
+
+        flattened_df = Series(df.values.ravel()).value_counts()
+
+        # Ensure expected entries are present exactly once
+        self.assertEqual(flattened_df.loc["Doubly super effective"], 1)
+        self.assertEqual(flattened_df.loc["Super effective"], 1)
+        self.assertEqual(flattened_df.loc["Neutral"], 1)
+        self.assertEqual(flattened_df.loc["Resisted"], 1)
+        self.assertEqual(flattened_df.loc["Doubly resisted"], 1)
+        # Triply resisted text includes the asterisk from the span
+        self.assertEqual(flattened_df.loc["Triply resisted*"], 1)
+        self.assertEqual(flattened_df.loc["×2.56"], 1)
+        self.assertEqual(flattened_df.loc["×1.6"], 1)
+        self.assertEqual(flattened_df.loc["×1"], 1)
+        self.assertEqual(flattened_df.loc["×0.625"], 1)
+        self.assertEqual(flattened_df.loc["×0.390625"], 1)
+        self.assertEqual(flattened_df.loc["×0.244140625"], 1)
+        # Total cells: 6 rows * 2 columns
+        self.assertEqual(flattened_df.sum(), 12)
 
 
 if __name__ == "__main__":
