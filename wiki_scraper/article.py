@@ -4,7 +4,7 @@
 from collections import Counter
 from bs4 import BeautifulSoup
 from pandas import DataFrame, read_html
-from re import findall
+from re import findall, sub
 from io import StringIO
 
 
@@ -33,7 +33,10 @@ class Article:
         if self.container is not None:
             paragraph = self.container.find("p")
             if paragraph is not None:
-                return paragraph.get_text(separator=" ", strip=True)
+                text = paragraph.get_text(separator=" ", strip=True)
+
+                # Remove spaces before punctuation marks
+                return sub(r'\s+([.,!?;:)])', r'\1', text)
         return ""
 
     def get_table_by_index(self, index: int) -> DataFrame:
@@ -56,8 +59,8 @@ class Article:
 
         text = self.container.get_text(separator=" ", strip=True)
 
-        # regex looking for words, ignoring punctuation and numbers
-        pattern = r'[A-Za-z]+'
+        # regex looking for words, allowing internal apostrophes
+        pattern = r"[A-Za-z]+(?:'[A-Za-z]+)*"
         words = findall(pattern, text.lower())
 
         # creates needed dictionary
