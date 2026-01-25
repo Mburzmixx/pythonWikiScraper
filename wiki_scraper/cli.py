@@ -4,7 +4,17 @@ import sys
 import argparse
 from wiki_scraper.utils import format_phrase
 
-parser_description = "TODO"
+parser_description = ("USAGE\n"
+                      "You should call with one of the following options:\n"
+                      "--summary `your_phrase`\n"
+                      "--table `your_phrase` --number n\n"
+                      "--count-words `your_phrase`\n"
+                      "--analyze-relative-word-frequency"
+                      " --mode [`article`, `language`] --count n "
+                      "[-- chart `path.png`]\n"
+                      "--auto-count-words `your_begin_phrase`"
+                      " --depth n --wait t\n\n"
+                      "Other use cases won't be served.\n")
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
