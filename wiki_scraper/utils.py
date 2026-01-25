@@ -5,7 +5,6 @@ from pandas import DataFrame
 import time
 import matplotlib.pyplot as plt
 from pathlib import Path
-from wiki_scraper.scraper import Scraper
 
 OK = 0
 BULBAPEDIA_URL = "https://bulbapedia.bulbagarden.net/wiki/"
@@ -104,6 +103,8 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
 
 
 def auto_count_words(start_phrase: str, depth: int, wait: float):
+    from wiki_scraper.scraper import Scraper
+
     start_phrase = format_phrase(start_phrase)
     begin_url = get_url_from_phrase(start_phrase)
 
@@ -119,11 +120,7 @@ def auto_count_words(start_phrase: str, depth: int, wait: float):
 
         visited.add(current_url)
 
-        scraper = Scraper(
-            base_url=BULBAPEDIA_URL,
-            phrase=get_phrase_from_url(current_url),
-            use_local_file=False
-        )
+        scraper = Scraper(phrase=get_phrase_from_url(current_url))
 
         article = scraper.scrape()
 
@@ -150,5 +147,9 @@ def get_phrase_from_url(url: str) -> str:
     return url.removeprefix(BULBAPEDIA_URL).removeprefix("/wiki/")
 
 
-def format_phrase(phrase: str) -> str:
+def format_phrase(phrase: str) -> str | None:
+    if phrase is None or len(phrase) == 0:
+        return phrase
+
+    phrase = phrase[0].upper() + phrase[1:]
     return phrase.replace(" ", "_")
