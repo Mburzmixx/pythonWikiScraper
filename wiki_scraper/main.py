@@ -10,9 +10,9 @@ def main(argv=None):
     controller = Controller(args)
     try:
         if controller.run() == OK:
-            print("Program exited successfully.")
+            print("\nOK: wiki_scraper exited successfully!\n")
     except ArticleNotFound as e:
-        print("ERROR: Article not found.")
+        print("\nERROR: Article not found. Message:\n", str(e))
 
 
 if __name__ == "__main__":
