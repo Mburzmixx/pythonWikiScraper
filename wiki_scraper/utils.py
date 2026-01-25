@@ -28,6 +28,8 @@ def update_word_counts(to_add: dict[str, int]):
 def analyze_relative_word_freq(mode: str, n: int, chart_path=None):
     data = get_relative_freq_table(mode=mode, n=n)
 
+    print(data)
+
     if chart_path is not None:
         dyn_width = max(10, int(n * 0.8))
         data.plot(
@@ -77,7 +79,7 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
             lambda w: word_frequency(w, "en")
         )
 
-        return df_sorted
+        return df_sorted.reset_index(drop=True)
     elif mode == "language":
         top_words = top_n_list("en", n)
 
@@ -99,7 +101,10 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
                 df["frequency in the article"] / normaliser
         )
 
-        return df
+        return df.reset_index(drop=True)
+    else:
+        # should not happen
+        return DataFrame()
 
 
 def auto_count_words(start_phrase: str, depth: int, wait: float):
