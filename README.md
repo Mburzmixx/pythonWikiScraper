@@ -14,7 +14,15 @@ This project uses data from [Bulbapedia](https://bulbapedia.bulbagarden.net/wiki
 - Provide appropriate attribution
 
 
-**Usage:**
+## Usage:
+
+**Required modules:**
+- wordfreq
+- pandas
+- bs4
+- lxml
+- requests
+- matplotlib
 
 Run the CLI after activating your Python environment:
 
