@@ -55,19 +55,17 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
         with open(dict_path, "r", encoding="utf-8") as f:
             word_counts = load(f)
 
+    total = sum(word_counts.values())
+    if total == 0:
+        total = 1
+
+    for word, count in word_counts.items():
+        word_counts[word] = count / total
+
     if mode == "article":
         df = DataFrame(
             list(word_counts.items()),
             columns=["word", "frequency in the article"]
-        )
-
-        # Normalizing frequencies to match `word_frequency` scale
-        normaliser = df["frequency in the article"].sum()
-        if normaliser == 0:
-            normaliser = 1
-    
-        df["frequency in the article"] = (
-                df["frequency in the article"] / normaliser
         )
 
         df_sorted = df.sort_values(
@@ -90,15 +88,6 @@ def get_relative_freq_table(mode: str, n: int) -> DataFrame:
 
         df["frequency in the article"] = df["word"].apply(
             lambda w: word_counts.get(w, 0)
-        )
-
-        # Normalizing frequencies to match `word_frequency` scale
-        normaliser = df["frequency in the article"].sum()
-        if normaliser == 0:
-            normaliser = 1
-
-        df["frequency in the article"] = (
-                df["frequency in the article"] / normaliser
         )
 
         return df.reset_index(drop=True)
