@@ -98,12 +98,12 @@ def online_test():
         "wiki_scraper",
         "--auto-count-words", "Tropical_Wind",
         "--depth", "1",
-        "--wait", "1"
+        "--wait", "0"
     ]
     wiki_scraper_main(test_args)
     print(f"✓ online auto-count-words test passed!")
 
 
 if __name__ == "__main__":
-    # main()
+    main()
     online_test()
